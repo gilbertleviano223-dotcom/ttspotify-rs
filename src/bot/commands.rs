@@ -794,6 +794,27 @@ impl CommandDispatcher {
                         self.send(BotCommand::RadioToggle { enable: false, user_id: sender_id });
                         self.reply_t(client, sender_id, Key::RadioDisabled, &[]);
                     }
+                } else if !arg.is_empty() {
+                    let query = arg.to_string();
+                    let cmd_tx = self.cmd_tx.clone();
+                    let client_clone = client.clone();
+                    let uid = sender_id;
+                    self.reply(client, sender_id, &format!("Mencari radio: {}...", query));
+                    tokio::spawn(async move {
+                        match crate::radio::search_station(&query).await {
+                            Ok(station) => {
+                                crate::bot::commands::send_reply(&client_clone, uid, &format!("Memutar: {} ({})", station.name, station.countrycode.unwrap_or_default()));
+                                let _ = cmd_tx.send(crate::bot::commands::BotCommand::SearchAndPlay {
+                                    request: crate::bot::commands::PlayRequest::Query(station.url_resolved),
+                                    user_id: uid,
+                                    user_name: format!("User#{}", uid),
+                                });
+                            }
+                            Err(e) => {
+                                crate::bot::commands::send_reply(&client_clone, uid, &format!("Gagal: {}", e));
+                            }
+                        }
+                    });
                 } else {
                     let key = if self.state.lock().radio_enabled {
                         Key::RadioStatusOn

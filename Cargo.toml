@@ -43,7 +43,7 @@ rustypipe = { git = "https://codeberg.org/ThetaDev/rustypipe", rev = "6035e6db4e
 # = false drops decoders nothing feeds it (adpcm/mkv/pcm/wav); Spotify's
 # ogg/vorbis are still pulled in by librespot-playback.
 # rubato resamples to the 44.1k pipeline rate.
-reqwest = { version = "0.12", default-features = false, features = ["rustls-tls", "stream"] }
+reqwest = { version = "0.12", default-features = false, features = ["rustls-tls", "stream", "json"] }
 symphonia = { version = "0.5", default-features = false, features = ["isomp4", "aac"] }
 rubato = "0.16"
 

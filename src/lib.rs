@@ -35,3 +35,4 @@ pub mod terminal_copy;
 pub mod wizard;
 pub mod youtube;
 
+pub mod radio;

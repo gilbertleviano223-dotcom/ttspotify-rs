@@ -1,0 +1,34 @@
+name: Build ttspotify-rs (ARM64)
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+
+jobs:
+  build-arm64:
+    name: Build Linux aarch64 Binary
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-unknown-linux-gnu
+
+      - name: Install cross
+        uses: taiki-e/install-action@v2
+        with:
+          tool: cross
+
+      - name: Build release binary with cross
+        run: cross build --release --target aarch64-unknown-linux-gnu
+
+      - name: Upload compiled binary artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ttspotify-rs-arm64
+          path: target/aarch64-unknown-linux-gnu/release/ttspotify-rs
+          if-no-files-found: error
